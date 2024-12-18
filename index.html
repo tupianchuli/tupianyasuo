@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片压缩工具</title>
     <link rel="stylesheet" href="css/style.css">
+    <div class="test-images" style="display: none;">
+        <!-- 大尺寸照片 -->
+        <img src="https://source.unsplash.com/random/3000x2000" alt="测试大图">
+        
+        <!-- 中等尺寸照片 -->
+        <img src="https://source.unsplash.com/random/1200x800" alt="测试中图">
+        
+        <!-- 小尺寸照片 -->
+        <img src="https://source.unsplash.com/random/800x600" alt="测试小图">
+    </div>
 </head>
 <body>
     <!-- 主容器 -->
@@ -12,6 +22,24 @@
         <header>
             <h1>图片压缩工具</h1>
             <p>支持 PNG、JPG 格式的图片压缩</p>
+            <!-- 测试图片区域 -->
+            <div class="test-images-section">
+                <p class="test-images-title">测试图片：</p>
+                <div class="test-images-grid">
+                    <div class="test-image-item">
+                        <img src="https://images.unsplash.com/photo-1682687220742-aba13b6e50ba" alt="风景图" class="test-thumb">
+                        <span>风景图 (大尺寸)</span>
+                    </div>
+                    <div class="test-image-item">
+                        <img src="https://images.unsplash.com/photo-1682687221038-404670f05144" alt="人物图" class="test-thumb">
+                        <span>人物图 (中等)</span>
+                    </div>
+                    <div class="test-image-item">
+                        <img src="https://images.unsplash.com/photo-1682687220063-4742bd7fd538" alt="产品图" class="test-thumb">
+                        <span>产品图 (小尺寸)</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- 上传区域 -->

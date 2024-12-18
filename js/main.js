@@ -107,4 +107,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
+
+    // 添加测试图片点击处理
+    document.querySelectorAll('.test-image-item').forEach(item => {
+        item.addEventListener('click', async () => {
+            const img = item.querySelector('img');
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            const file = new File([blob], `test-${img.alt}.jpg`, { type: 'image/jpeg' });
+            handleFile(file);
+        });
+    });
 }); 
