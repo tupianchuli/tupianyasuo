@@ -14,52 +14,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMode = 'normal';
     let cartoonModel = null;
 
-    // 加载卡通化模型
-    async function loadCartoonModel() {
-        try {
-            cartoonModel = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/style_transfer/1/model.json');
-        } catch (error) {
-            console.error('模型加载失败:', error);
-            alert('模型加载失败，请检查网络连接');
-        }
-    }
-
-    // 初始化加载模型
-    loadCartoonModel();
-
     // 卡通化处理
     async function cartoonize(imageElement) {
-        if (!cartoonModel) {
-            alert('模型还未加载完成，请稍后再试');
-            return null;
+        const canvas = document.createElement('canvas');
+        canvas.width = imageElement.width;
+        canvas.height = imageElement.height;
+        const ctx = canvas.getContext('2d');
+        
+        // 绘制原始图片
+        ctx.drawImage(imageElement, 0, 0);
+        
+        // 应用卡通效果
+        ctx.filter = 'saturate(150%) contrast(120%) brightness(110%)';
+        ctx.drawImage(canvas, 0, 0);
+        
+        // 添加边缘检测效果
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        
+        for (let i = 0; i < pixels.length; i += 4) {
+            const r = pixels[i];
+            const g = pixels[i + 1];
+            const b = pixels[i + 2];
+            
+            // 转换为灰度
+            const gray = 0.3 * r + 0.59 * g + 0.11 * b;
+            
+            // 简化颜色
+            const threshold = 5;
+            pixels[i] = Math.floor(r / threshold) * threshold;
+            pixels[i + 1] = Math.floor(g / threshold) * threshold;
+            pixels[i + 2] = Math.floor(b / threshold) * threshold;
         }
-
-        try {
-            // 预处理图片
-            const tensor = tf.browser.fromPixels(imageElement)
-                .toFloat()
-                .resizeBilinear([256, 256])  // 调整大小以提高性能
-                .div(255.0)
-                .expandDims();
-
-            // 应用风格转换
-            const result = await cartoonModel.predict(tensor);
-
-            // 后处理
-            const cartoonImage = await tf.browser.toPixels(result.squeeze());
-
-            const canvas = document.createElement('canvas');
-            canvas.width = imageElement.width;
-            canvas.height = imageElement.height;
-            const ctx = canvas.getContext('2d');
-            ctx.putImageData(new ImageData(cartoonImage, canvas.width, canvas.height), 0, 0);
-
-            return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
-        } catch (error) {
-            console.error('处理图片时出错:', error);
-            alert('处理图片时出错，请重试');
-            return null;
-        }
+        
+        ctx.putImageData(imageData, 0, 0);
+        
+        return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
     }
 
     // 处理样式切换
