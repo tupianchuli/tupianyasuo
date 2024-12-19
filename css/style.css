@@ -71,14 +71,14 @@ header p {
     margin-top: 2rem;
 }
 
-.preview-section {
-    display: flex;
+.preview-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     gap: 2rem;
     margin-bottom: 2rem;
 }
 
 .preview-box {
-    flex: 1;
     background-color: var(--card-background);
     border-radius: var(--border-radius);
     padding: 1rem;
@@ -195,11 +195,61 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-    .preview-section {
-        flex-direction: column;
+    .preview-grid {
+        grid-template-columns: 1fr;
     }
     
     .container {
         padding: 1rem;
     }
+} 
+
+/* 功能选择区域 */
+.feature-select {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.feature-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.feature-btn {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    background: white;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feature-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* 处理区域布局 */
+.process-box {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.feature-settings {
+    margin: 2rem 0;
+}
+
+/* 下载按钮区域 */
+.download-section {
+    text-align: center;
+    margin-top: 2rem;
 } 

@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let originalFile = null;
     let currentMode = 'normal';
-    let cartoonModel = null;
 
     // 卡通化处理
     async function cartoonize(imageElement) {
@@ -24,10 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 绘制原始图片
         ctx.drawImage(imageElement, 0, 0);
         
-        // 应用卡通效果
-        ctx.filter = 'saturate(150%) contrast(120%) brightness(110%)';
-        ctx.drawImage(canvas, 0, 0);
-        
         // 添加边缘检测效果
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imageData.data;
@@ -37,26 +32,40 @@ document.addEventListener('DOMContentLoaded', function() {
             const g = pixels[i + 1];
             const b = pixels[i + 2];
             
-            // 转换为灰度
-            const gray = 0.3 * r + 0.59 * g + 0.11 * b;
-            
             // 简化颜色
-            const threshold = 5;
+            const threshold = 32; // 增大阈值，使颜色分层更明显
             pixels[i] = Math.floor(r / threshold) * threshold;
             pixels[i + 1] = Math.floor(g / threshold) * threshold;
             pixels[i + 2] = Math.floor(b / threshold) * threshold;
+            
+            // 增强边缘
+            if (i > 0 && i < pixels.length - 4) {
+                const prevR = pixels[i - 4];
+                const prevG = pixels[i - 3];
+                const prevB = pixels[i - 2];
+                
+                const diff = Math.abs(r - prevR) + Math.abs(g - prevG) + Math.abs(b - prevB);
+                if (diff > 100) {
+                    pixels[i] = pixels[i + 1] = pixels[i + 2] = 0; // 边缘变黑
+                }
+            }
         }
         
         ctx.putImageData(imageData, 0, 0);
+        
+        // 最后增加饱和度和对比度
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
     }
 
     // 处理样式切换
-    document.getElementById('normalBtn').addEventListener('click', function() {
+    document.getElementById('compressBtn').addEventListener('click', function() {
         this.classList.add('active');
         document.getElementById('cartoonBtn').classList.remove('active');
-        currentMode = 'normal';
+        currentMode = 'compress';
         if (originalPreview.src) {
             compressImage(originalPreview.src, qualitySlider.value / 100);
         }
@@ -64,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('cartoonBtn').addEventListener('click', async function() {
         this.classList.add('active');
-        document.getElementById('normalBtn').classList.remove('active');
+        document.getElementById('compressBtn').classList.remove('active');
         currentMode = 'cartoon';
         if (originalPreview.src) {
             const cartoonDataUrl = await cartoonize(originalPreview);
@@ -120,7 +129,17 @@ document.addEventListener('DOMContentLoaded', function() {
             originalPreview.src = e.target.result;
             originalSize.textContent = formatFileSize(file.size);
             previewContainer.style.display = 'block';
-            compressImage(e.target.result, qualitySlider.value / 100);
+            if (currentMode === 'cartoon') {
+                cartoonize(originalPreview).then(dataUrl => {
+                    if (dataUrl) {
+                        compressedPreview.src = dataUrl;
+                        const size = Math.round((dataUrl.length - 'data:image/jpeg;base64,'.length) * 3/4);
+                        document.getElementById('compressedSize').textContent = formatFileSize(size);
+                    }
+                });
+            } else {
+                compressImage(e.target.result, qualitySlider.value / 100);
+            }
         };
         reader.readAsDataURL(file);
     }

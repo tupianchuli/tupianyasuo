@@ -7,11 +7,10 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- 主容器 -->
     <div class="container">
         <header>
-            <h1>图片压缩工具</h1>
-            <p>支持 PNG、JPG 格式的图片压缩</p>
+            <h1>图片工具</h1>
+            <p>支持图片压缩和卡通化处理</p>
         </header>
 
         <!-- 上传区域 -->
@@ -23,9 +22,10 @@
             </div>
         </div>
 
-        <!-- 预览和控制区域 -->
+        <!-- 预览和处理区域 -->
         <div class="preview-container" id="previewContainer" style="display: none;">
-            <div class="preview-section">
+            <div class="preview-grid">
+                <!-- 原图预览 -->
                 <div class="preview-box">
                     <h3>原始图片</h3>
                     <div class="image-container">
@@ -36,11 +36,32 @@
                         <span id="originalSize">0 KB</span>
                     </div>
                 </div>
-                
+
+                <!-- 处理区域 -->
+                <div class="process-box">
+                    <!-- 功能选择 -->
+                    <div class="feature-select">
+                        <h3>选择处理方式</h3>
+                        <div class="feature-buttons">
+                            <button id="compressBtn" class="feature-btn active">图片压缩</button>
+                            <button id="cartoonBtn" class="feature-btn">卡通化</button>
+                        </div>
+                    </div>
+
+                    <!-- 压缩设置 -->
+                    <div id="compressSettings" class="feature-settings">
+                        <div class="quality-control">
+                            <label for="qualitySlider">压缩质量：<span id="qualityValue">80%</span></label>
+                            <input type="range" id="qualitySlider" min="1" max="100" value="80">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 结果预览 -->
                 <div class="preview-box">
-                    <h3>压缩后</h3>
+                    <h3>处理结果</h3>
                     <div class="image-container">
-                        <img id="compressedPreview" alt="压缩后预览">
+                        <img id="compressedPreview" alt="处理后预览">
                     </div>
                     <div class="file-info">
                         <span>文件大小：</span>
@@ -49,19 +70,8 @@
                 </div>
             </div>
 
-            <!-- 控制面板 -->
-            <div class="control-panel">
-                <div class="quality-control">
-                    <label for="qualitySlider">压缩质量：<span id="qualityValue">80%</span></label>
-                    <input type="range" id="qualitySlider" min="1" max="100" value="80">
-                </div>
-                <div class="style-control">
-                    <label>图片效果：</label>
-                    <div class="style-buttons">
-                        <button id="normalBtn" class="style-btn active">原始</button>
-                        <button id="cartoonBtn" class="style-btn">卡通化</button>
-                    </div>
-                </div>
+            <!-- 下载按钮 -->
+            <div class="download-section">
                 <button id="downloadBtn" class="download-btn">下载处理后的图片</button>
             </div>
         </div>
