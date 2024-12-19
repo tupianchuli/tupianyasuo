@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图片压缩工具</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
 </head>
 <body>
     <!-- 主容器 -->
@@ -12,24 +13,6 @@
         <header>
             <h1>图片压缩工具</h1>
             <p>支持 PNG、JPG 格式的图片压缩</p>
-            <!-- 测试图片区域 -->
-            <div class="test-images-section">
-                <p class="test-images-title">测试图片：</p>
-                <div class="test-images-grid">
-                    <div class="test-image-item">
-                        <img src="https://picsum.photos/1200/800" alt="风景图" class="test-thumb">
-                        <span>风景图 (大尺寸)</span>
-                    </div>
-                    <div class="test-image-item">
-                        <img src="https://picsum.photos/800/600" alt="人物图" class="test-thumb">
-                        <span>人物图 (中等)</span>
-                    </div>
-                    <div class="test-image-item">
-                        <img src="https://picsum.photos/600/400" alt="产品图" class="test-thumb">
-                        <span>产品图 (小尺寸)</span>
-                    </div>
-                </div>
-            </div>
         </header>
 
         <!-- 上传区域 -->
@@ -73,7 +56,14 @@
                     <label for="qualitySlider">压缩质量：<span id="qualityValue">80%</span></label>
                     <input type="range" id="qualitySlider" min="1" max="100" value="80">
                 </div>
-                <button id="downloadBtn" class="download-btn">下载压缩后的图片</button>
+                <div class="style-control">
+                    <label>图片效果：</label>
+                    <div class="style-buttons">
+                        <button id="normalBtn" class="style-btn active">原始</button>
+                        <button id="cartoonBtn" class="style-btn">卡通化</button>
+                    </div>
+                </div>
+                <button id="downloadBtn" class="download-btn">下载处理后的图片</button>
             </div>
         </div>
     </div>

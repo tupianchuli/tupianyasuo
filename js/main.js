@@ -11,6 +11,68 @@ document.addEventListener('DOMContentLoaded', function() {
     const downloadBtn = document.getElementById('downloadBtn');
 
     let originalFile = null;
+    let currentMode = 'normal';
+    let cartoonModel = null;
+
+    // 加载卡通化模型
+    async function loadCartoonModel() {
+        try {
+            cartoonModel = await tf.loadGraphModel('https://tfhub.dev/tensorflow/tfjs-model/cartoongan/dr/1/default/1');
+        } catch (error) {
+            console.error('模型加载失败:', error);
+        }
+    }
+
+    // 初始化加载模型
+    loadCartoonModel();
+
+    // 卡通化处理
+    async function cartoonize(imageElement) {
+        if (!cartoonModel) {
+            alert('模型还未加载完成，请稍后再试');
+            return null;
+        }
+
+        const tensor = tf.browser.fromPixels(imageElement)
+            .toFloat()
+            .div(255.0)
+            .expandDims();
+
+        const result = await cartoonModel.predict(tensor);
+        const cartoonImage = await tf.browser.toPixels(result.squeeze());
+
+        const canvas = document.createElement('canvas');
+        canvas.width = imageElement.width;
+        canvas.height = imageElement.height;
+        const ctx = canvas.getContext('2d');
+        ctx.putImageData(new ImageData(cartoonImage, canvas.width, canvas.height), 0, 0);
+
+        return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
+    }
+
+    // 处理样式切换
+    document.getElementById('normalBtn').addEventListener('click', function() {
+        this.classList.add('active');
+        document.getElementById('cartoonBtn').classList.remove('active');
+        currentMode = 'normal';
+        if (originalPreview.src) {
+            compressImage(originalPreview.src, qualitySlider.value / 100);
+        }
+    });
+
+    document.getElementById('cartoonBtn').addEventListener('click', async function() {
+        this.classList.add('active');
+        document.getElementById('normalBtn').classList.remove('active');
+        currentMode = 'cartoon';
+        if (originalPreview.src) {
+            const cartoonDataUrl = await cartoonize(originalPreview);
+            if (cartoonDataUrl) {
+                compressedPreview.src = cartoonDataUrl;
+                const compressedSize = Math.round((cartoonDataUrl.length - 'data:image/jpeg;base64,'.length) * 3/4);
+                document.getElementById('compressedSize').textContent = formatFileSize(compressedSize);
+            }
+        }
+    });
 
     // 处理拖拽上传
     uploadArea.addEventListener('dragover', (e) => {
@@ -107,15 +169,4 @@ document.addEventListener('DOMContentLoaded', function() {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
-
-    // 添加测试图片点击处理
-    document.querySelectorAll('.test-image-item').forEach(item => {
-        item.addEventListener('click', async () => {
-            const img = item.querySelector('img');
-            const response = await fetch(img.src);
-            const blob = await response.blob();
-            const file = new File([blob], `test-${img.alt}.jpg`, { type: 'image/jpeg' });
-            handleFile(file);
-        });
-    });
 }); 

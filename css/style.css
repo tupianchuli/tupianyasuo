@@ -161,6 +161,38 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: #0056b3;
 }
 
+/* 样式控制按钮 */
+.style-control {
+    margin-bottom: 1rem;
+}
+
+.style-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.style-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    background: white;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.style-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.style-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .preview-section {
@@ -170,45 +202,4 @@ input[type="range"]::-webkit-slider-thumb {
     .container {
         padding: 1rem;
     }
-} 
-
-/* 测试图片区域样式 */
-.test-images-section {
-    margin: 2rem 0;
-    padding: 1rem;
-    background: var(--card-background);
-    border-radius: var(--border-radius);
-}
-
-.test-images-title {
-    margin-bottom: 1rem;
-    color: var(--text-color);
-}
-
-.test-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.test-image-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: var(--border-radius);
-    transition: all 0.3s ease;
-}
-
-.test-image-item:hover {
-    background: #f5f5f5;
-}
-
-.test-thumb {
-    width: 150px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
 } 
