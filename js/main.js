@@ -17,9 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 加载卡通化模型
     async function loadCartoonModel() {
         try {
-            cartoonModel = await tf.loadGraphModel('https://tfhub.dev/tensorflow/tfjs-model/cartoongan/dr/1/default/1');
+            cartoonModel = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/style_transfer/1/model.json');
         } catch (error) {
             console.error('模型加载失败:', error);
+            alert('模型加载失败，请检查网络连接');
         }
     }
 
@@ -33,21 +34,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return null;
         }
 
-        const tensor = tf.browser.fromPixels(imageElement)
-            .toFloat()
-            .div(255.0)
-            .expandDims();
+        try {
+            // 预处理图片
+            const tensor = tf.browser.fromPixels(imageElement)
+                .toFloat()
+                .resizeBilinear([256, 256])  // 调整大小以提高性能
+                .div(255.0)
+                .expandDims();
 
-        const result = await cartoonModel.predict(tensor);
-        const cartoonImage = await tf.browser.toPixels(result.squeeze());
+            // 应用风格转换
+            const result = await cartoonModel.predict(tensor);
 
-        const canvas = document.createElement('canvas');
-        canvas.width = imageElement.width;
-        canvas.height = imageElement.height;
-        const ctx = canvas.getContext('2d');
-        ctx.putImageData(new ImageData(cartoonImage, canvas.width, canvas.height), 0, 0);
+            // 后处理
+            const cartoonImage = await tf.browser.toPixels(result.squeeze());
 
-        return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
+            const canvas = document.createElement('canvas');
+            canvas.width = imageElement.width;
+            canvas.height = imageElement.height;
+            const ctx = canvas.getContext('2d');
+            ctx.putImageData(new ImageData(cartoonImage, canvas.width, canvas.height), 0, 0);
+
+            return canvas.toDataURL('image/jpeg', qualitySlider.value / 100);
+        } catch (error) {
+            console.error('处理图片时出错:', error);
+            alert('处理图片时出错，请重试');
+            return null;
+        }
     }
 
     // 处理样式切换
